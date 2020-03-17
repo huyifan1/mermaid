@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.uboxol.cloud.mermaid.db.mapper.CustomerComplaintMapper">
+
+	<resultMap id="returnMap" type="com.uboxol.cloud.mermaid.db.entity.kefu.CustomerComplaint">
+    <id column="id" property="id"/>
+    <result column="branch_company" property="branchCompany"/>
+    <result column="cc_status" property="ccStatus"/>
+    <result column="cc_time" property="ccTime"/>
+    <result column="eduction_money" property="eductionMoney"/>
+    <result column="eduction_time" property="eductionTime"/>
+    <result column="handle_status" property="handleStatus"/>
+    <result column="handle_time" property="handleTime"/>
+    <result column="handle_way" property="handleWay"/>
+    <result column="ks_no" property="ksNo"/>
+    <result column="machine_no" property="machineNo"/>
+    <result column="order_num" property="orderNum"/>
+    <result column="service_reminder" property="serviceReminder"/>
+    <result column="three_serial_no" property="threeSerialNo"/>
+    <result column="trade_no" property="tradeNo"/>
+    <result column="transaction_id" property="transactionId"/>
+    <result column="uids" property="uids"/>
+    <result column="u_Id1" property="uId1"/>
+    <result column="u_Id2" property="uId2"/>
+    <result column="visit_status" property="visitStatus"/>
+    <result column="visit_time" property="visitTime"/>
+  </resultMap>
+	
+	<select id="findAll"  parameterType ="com.uboxol.cloud.mermaid.db.entity.kefu.CustomerComplaint"  resultMap="returnMap">
+	SELECT c.id, c.branch_company, c.cc_status, c.cc_time, c.eduction_money, c.eduction_time, c.handle_status, 
+	c.handle_time, c.handle_way, c.ks_no, c.machine_no, c.order_num, c.service_reminder, c.three_serial_no, c.trade_no, 
+	c.transaction_id, c.uids,c.u_Id1,c.u_Id2, c.visit_status, c.visit_time
+	FROM customer_complaint AS c
+	<!-- (SELECT * FROM customer_complaint AS c where c.transaction_id in (select DISTINCT b.transaction_id from b_order b where b.handle = #{account,jdbcType=VARCHAR})) as c -->
+	<where>
+	<if test="transactionId != null">
+	and c.transaction_id = #{transactionId,jdbcType=VARCHAR}
+	</if>
+	<if test="tradeNo != null">
+	and c.trade_no = #{tradeNo,jdbcType=VARCHAR}
+	</if>
+	<if test="branchCompany != null">
+	and c.branch_company = #{branchCompany,jdbcType=VARCHAR}
+	</if>
+	<if test="orderNum != null">
+	and c.order_num &gt;= #{orderNum,jdbcType=INTEGER}
+	</if>
+	<if test="eductionMoney != null">
+	and c.eduction_money &gt;= #{eductionMoney,jdbcType=DECIMAL}
+	</if>
+	<if test="machineNo != null">
+	and c.machine_no = #{machineNo,jdbcType=VARCHAR}
+	</if>
+	<if test="uids != null">
+	<!-- and c.uids = #{uids,jdbcType=VARCHAR} -->
+	and c.u_id1=#{uids,jdbcType=VARCHAR} or c.u_id2=#{uids,jdbcType=VARCHAR}
+	</if>
+	<if test="ccStatus != null">
+	and c.cc_status = #{ccStatus,jdbcType=INTEGER}
+	</if>
+	<if test="handleStatus != null">
+	and c.handle_status = #{handleStatus,jdbcType=INTEGER}
+	</if>
+	<if test="visitStatus != null">
+	and c.visit_status = #{visitStatus,jdbcType=INTEGER}
+	</if>
+	<if test="ccbeginTime!=null and ccendTime!=null ">
+		<if test="ccbeginTime==ccendTime">
+		and c.cc_time like concat('%',#{ccbeginTime},'%')
+		</if>
+		<if test="ccbeginTime!=ccendTime">
+		and c.cc_time &gt;= #{ccbeginTime,jdbcType=VARCHAR}
+        and c.cc_time &lt;= #{ccendTime,jdbcType=VARCHAR}
+        or c.cc_time like concat('%',#{ccendTime},'%')
+		</if>
+    </if>
+	<if test="handlebeginTime!=null and handleendTime!=null ">
+			<if test="handlebeginTime==handleendTime">
+			and c.handle_time like concat('%',#{handlebeginTime},'%')
+			</if>
+			<if test="handlebeginTime!=handleendTime">
+			and c.handle_time &gt;= #{handlebeginTime,jdbcType=VARCHAR}
+	        and c.handle_time &lt;= #{handleendTime,jdbcType=VARCHAR}
+	        or c.handle_time like concat('%',#{handleendTime},'%')
+			</if>
+	</if>
+	</where>
+	</select>
+	
+
+</mapper>
